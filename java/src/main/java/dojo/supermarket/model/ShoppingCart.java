@@ -41,33 +41,34 @@ public class ShoppingCart {
                 double unitPrice = catalog.getUnitPrice(p);
                 int quantityAsInt = (int) quantity;
                 Discount discount = null;
-                int x = 1;
                 if (offer.offerType == SpecialOfferType.ThreeForTwo) {
-                    x = 3;
-
-                } else if (offer.offerType == SpecialOfferType.TwoForAmount) {
-                    x = 2;
+                    if (quantityAsInt >= 3) {
+                        double total = (offer.numberOfDiscounts(quantityAsInt) * 2 * unitPrice) + quantityAsInt % 3 * unitPrice;
+                        double discountAmount = quantity * unitPrice - total;
+                        discount = new Discount(p, 3 + " for 2", discountAmount);
+                    }
+                }
+                if (offer.offerType == SpecialOfferType.TwoForAmount) {
                     if (quantityAsInt >= 2) {
-                        double total = offer.argument * quantityAsInt / x + quantityAsInt % 2 * unitPrice;
-                        double discountN = unitPrice * quantity - total;
-                        discount = new Discount(p, "2 for " + offer.argument, discountN);
+                        double total = offer.argument * offer.numberOfDiscounts(quantityAsInt) + quantityAsInt % 2 * unitPrice;
+                        double discountAmount = unitPrice * quantity - total;
+                        discount = new Discount(p, 2 + " for " + offer.argument, discountAmount);
                     }
 
                 } if (offer.offerType == SpecialOfferType.FiveForAmount) {
-                    x = 5;
+                    if (quantityAsInt >= 5) {
+                        double total = offer.argument * offer.numberOfDiscounts(quantityAsInt) + quantityAsInt % 5 * unitPrice;
+                        double discountAmount = unitPrice * quantity - total;
+                        discount = new Discount(p, 5 + " for " + offer.argument, discountAmount);
+                    }
                 }
-                int numberOfXs = quantityAsInt / x;
-                if (offer.offerType == SpecialOfferType.ThreeForTwo && quantityAsInt > 2) {
-                    double discountAmount = quantity * unitPrice - ((numberOfXs * 2 * unitPrice) + quantityAsInt % 3 * unitPrice);
-                    discount = new Discount(p, "3 for 2", discountAmount);
-                }
+
                 if (offer.offerType == SpecialOfferType.TenPercentDiscount) {
-                    discount = new Discount(p, offer.argument + "% off", quantity * unitPrice * offer.argument / 100.0);
+
+                    double discountAmount = unitPrice * quantity * offer.argument / 100.0;
+                    discount = new Discount(p, offer.argument + "% off", discountAmount);
                 }
-                if (offer.offerType == SpecialOfferType.FiveForAmount && quantityAsInt >= 5) {
-                    double discountTotal = unitPrice * quantity - (offer.argument * numberOfXs + quantityAsInt % 5 * unitPrice);
-                    discount = new Discount(p, x + " for " + offer.argument, discountTotal);
-                }
+
                 if (discount != null)
                     receipt.addDiscount(discount);
             }
