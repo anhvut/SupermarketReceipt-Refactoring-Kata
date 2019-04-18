@@ -5,6 +5,8 @@ import org.approvaltests.Approvals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 public class SupermarketTest {
     private SupermarketCatalog catalog;
     private Teller teller;
@@ -13,6 +15,7 @@ public class SupermarketTest {
     private Product rice;
     private Product apples;
     private Product cherryTomatoes;
+    private Product toothpaste;
 
     @BeforeEach
     public void setUp() {
@@ -22,6 +25,8 @@ public class SupermarketTest {
 
         toothbrush = new Product("toothbrush", ProductUnit.Each);
         catalog.addProduct(toothbrush, 0.99);
+        toothpaste = new Product("toothpaste", ProductUnit.Each);
+        catalog.addProduct(toothpaste, 3.32);
         rice = new Product("rice", ProductUnit.Each);
         catalog.addProduct(rice, 2.99);
         apples = new Product("apples", ProductUnit.Kilo);
@@ -117,6 +122,7 @@ public class SupermarketTest {
     @Test
     public void FiveForY_discount_withSixteen() {
         theCart.addItemQuantity(apples, 16);
+        teller.addSpecialOffer(SpecialOfferType.TwoForAmount, apples,4.00);
         teller.addSpecialOffer(SpecialOfferType.FiveForAmount, apples,6.99);
         Receipt receipt = teller.checksOutArticlesFrom(theCart);
         Approvals.verify(new ReceiptPrinter(40).printReceipt(receipt));
@@ -128,5 +134,16 @@ public class SupermarketTest {
         teller.addSpecialOffer(SpecialOfferType.FiveForAmount, apples,6.99);
         Receipt receipt = teller.checksOutArticlesFrom(theCart);
         Approvals.verify(new ReceiptPrinter(40).printReceipt(receipt));
+    }
+
+    @Test
+    public void bundle_discount() {
+        theCart.addItem(toothbrush);
+        theCart.addItem(toothpaste);
+        BundleOffer bundleOffer = new BundleOffer(Arrays.asList(toothpaste, toothbrush));
+        teller.addBundleOffer(bundleOffer);
+        Receipt receipt = teller.checksOutArticlesFrom(theCart);
+        Approvals.verify(new ReceiptPrinter(40).printReceipt(receipt));
+
     }
 }

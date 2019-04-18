@@ -32,4 +32,7 @@ public class Teller {
         return receipt;
     }
 
+    public void addBundleOffer(BundleOffer bundleOffer) {
+
+    }
 }
