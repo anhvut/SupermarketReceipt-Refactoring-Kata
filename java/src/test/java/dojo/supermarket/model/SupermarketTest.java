@@ -122,7 +122,6 @@ public class SupermarketTest {
     @Test
     public void FiveForY_discount_withSixteen() {
         theCart.addItemQuantity(apples, 16);
-        teller.addSpecialOffer(SpecialOfferType.TwoForAmount, apples,4.00);
         teller.addSpecialOffer(SpecialOfferType.FiveForAmount, apples,6.99);
         Receipt receipt = teller.checksOutArticlesFrom(theCart);
         Approvals.verify(new ReceiptPrinter(40).printReceipt(receipt));
@@ -140,8 +139,8 @@ public class SupermarketTest {
     public void bundle_discount() {
         theCart.addItem(toothbrush);
         theCart.addItem(toothpaste);
-        BundleOffer bundleOffer = new BundleOffer(Arrays.asList(toothpaste, toothbrush));
-        teller.addBundleOffer(bundleOffer);
+        Offer bundleOffer = new Offer(Arrays.asList(toothpaste, toothbrush), 10);
+        teller.addSpecialOffer(bundleOffer);
         Receipt receipt = teller.checksOutArticlesFrom(theCart);
         Approvals.verify(new ReceiptPrinter(40).printReceipt(receipt));
 
